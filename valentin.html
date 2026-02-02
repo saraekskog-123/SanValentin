@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Una Pregunta Especial</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', 'Garamond', serif;
+            background: linear-gradient(135deg, #ffeef8 0%, #ffe4f3 50%, #ffd4ed 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Floating hearts background */
+        .heart-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .heart-bg::before,
+        .heart-bg::after {
+            content: '♥';
+            position: absolute;
+            font-size: 20px;
+            color: rgba(255, 182, 193, 0.3);
+            animation: float 15s infinite;
+        }
+
+        .heart-bg::before {
+            left: 20%;
+            animation-delay: 0s;
+        }
+
+        .heart-bg::after {
+            left: 80%;
+            animation-delay: 7s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 90%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .initial-text {
+            font-size: 3em;
+            color: #d4567d;
+            font-style: italic;
+            opacity: 1;
+            transition: opacity 1s ease-out;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .initial-text.fade-out {
+            opacity: 0;
+        }
+
+        .question-container {
+            opacity: 0;
+            transition: opacity 1.5s ease-in;
+            display: none;
+        }
+
+        .question-container.show {
+            display: block;
+            opacity: 1;
+        }
+
+        .question {
+            font-size: 2.2em;
+            color: #c94d7a;
+            margin-bottom: 40px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .buttons-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            min-height: 150px;
+            position: relative;
+        }
+
+        .btn {
+            padding: 20px 40px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Georgia', serif;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-yes {
+            background: linear-gradient(135deg, #ff6b9d 0%, #ff8fab 100%);
+            color: white;
+            transform-origin: center;
+        }
+
+        .btn-yes:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 107, 157, 0.4);
+        }
+
+        .btn-no {
+            background: linear-gradient(135deg, #e0e0e0 0%, #c0c0c0 100%);
+            color: #666;
+            position: relative;
+            transition: all 0.1s ease;
+            font-size: 0.85em;
+            padding: 12px 25px;
+        }
+
+        .final-message {
+            display: none;
+            opacity: 0;
+            transition: opacity 1s ease-in;
+        }
+
+        .final-message.show {
+            display: block;
+            opacity: 1;
+        }
+
+        .final-text {
+            font-size: 1.5em;
+            color: #c94d7a;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            font-style: italic;
+        }
+
+        .gif-container {
+            margin-top: 20px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .gif-container img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .initial-text {
+                font-size: 2em;
+            }
+            
+            .question {
+                font-size: 1.6em;
+            }
+            
+            .btn {
+                padding: 15px 30px;
+                font-size: 1em;
+            }
+            
+            .final-text {
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="heart-bg"></div>
+    
+    <div class="container">
+        <div id="initialText" class="initial-text">
+            Señor Martínez...
+        </div>
+        
+        <div id="questionContainer" class="question-container">
+            <div class="question">
+                ¿Quieres ser mi San Valentín?
+            </div>
+            
+            <div class="buttons-container">
+                <button id="btnYes" class="btn btn-yes">
+                    Claro mi corazóncita, amor de mi vida, luz de mi alma 😍
+                </button>
+                <button id="btnNo" class="btn btn-no">
+                    No 💩
+                </button>
+            </div>
+        </div>
+        
+        <div id="finalMessage" class="final-message">
+            <div class="final-text">
+                Wise choice. We will be in touch with further details of the day- and night-time activities that will be organised for your full-day experience.
+            </div>
+            <div class="gif-container">
+                <img src="https://media.giphy.com/media/26u4cqiYI30juCOGY/giphy.gif" alt="Celebration">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const initialText = document.getElementById('initialText');
+        const questionContainer = document.getElementById('questionContainer');
+        const btnYes = document.getElementById('btnYes');
+        const btnNo = document.getElementById('btnNo');
+        const finalMessage = document.getElementById('finalMessage');
+
+        let yesButtonScale = 1;
+        let isNoButtonActive = true;
+
+        // Initial animation sequence
+        setTimeout(() => {
+            initialText.classList.add('fade-out');
+            
+            setTimeout(() => {
+                initialText.style.display = 'none';
+                questionContainer.classList.add('show');
+            }, 1000);
+        }, 3000);
+
+        // No button evasion
+        const noButtonZone = 150; // Distance in pixels to trigger evasion
+        
+        document.addEventListener('mousemove', (e) => {
+            if (!isNoButtonActive) return;
+            
+            const btnRect = btnNo.getBoundingClientRect();
+            const btnCenterX = btnRect.left + btnRect.width / 2;
+            const btnCenterY = btnRect.top + btnRect.height / 2;
+            
+            const distance = Math.sqrt(
+                Math.pow(e.clientX - btnCenterX, 2) + 
+                Math.pow(e.clientY - btnCenterY, 2)
+            );
+            
+            if (distance < noButtonZone) {
+                moveNoButton(e);
+            }
+        });
+
+        btnNo.addEventListener('mouseenter', moveNoButton);
+        btnNo.addEventListener('touchstart', moveNoButton);
+
+        function moveNoButton(e) {
+            if (!isNoButtonActive) return;
+            
+            e.preventDefault();
+            
+            const container = document.querySelector('.buttons-container');
+            const containerRect = container.getBoundingClientRect();
+            const btnRect = btnNo.getBoundingClientRect();
+            const yesRect = btnYes.getBoundingClientRect();
+            
+            const maxX = containerRect.width - btnRect.width - 20;
+            const maxY = containerRect.height - btnRect.height - 20;
+            
+            let newX, newY;
+            let attempts = 0;
+            const maxAttempts = 50;
+            const minDistance = 120; // Minimum distance from yes button
+            
+            // Keep trying until we find a position that doesn't overlap with yes button
+            do {
+                newX = Math.random() * maxX;
+                newY = Math.random() * maxY;
+                
+                // Calculate absolute position for distance check
+                const noButtonAbsX = containerRect.left + newX + btnRect.width / 2;
+                const noButtonAbsY = containerRect.top + newY + btnRect.height / 2;
+                const yesButtonCenterX = yesRect.left + yesRect.width / 2;
+                const yesButtonCenterY = yesRect.top + yesRect.height / 2;
+                
+                const distance = Math.sqrt(
+                    Math.pow(noButtonAbsX - yesButtonCenterX, 2) + 
+                    Math.pow(noButtonAbsY - yesButtonCenterY, 2)
+                );
+                
+                if (distance > minDistance) {
+                    break;
+                }
+                
+                attempts++;
+            } while (attempts < maxAttempts);
+            
+            btnNo.style.position = 'absolute';
+            btnNo.style.left = newX + 'px';
+            btnNo.style.top = newY + 'px';
+            
+            // Gradually increase yes button size (70% slower)
+            if (yesButtonScale < 1.5) {
+                yesButtonScale += 0.015;
+                btnYes.style.transform = `scale(${yesButtonScale})`;
+            }
+        }
+
+        // Yes button click
+        btnYes.addEventListener('click', () => {
+            isNoButtonActive = false;
+            questionContainer.style.display = 'none';
+            finalMessage.classList.add('show');
+        });
+
+        // Prevent clicking No button (just in case)
+        btnNo.addEventListener('click', (e) => {
+            e.preventDefault();
+            moveNoButton(e);
+        });
+    </script>
+</body>
+</html>
