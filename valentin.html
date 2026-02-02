@@ -221,12 +221,6 @@
                     y = Math.random() * (bodyHeight - btnHeight - padding * 2) + padding;
                     break;
             }
-
-            // ✅ CLAMP TO VIEWPORT
-            x = Math.max(0, Math.min(x, bodyWidth - btnWidth));
-            y = Math.max(0, Math.min(y, bodyHeight - btnHeight));
-
-
             
             // Ensure it doesn't overlap with Yes button
             if (Math.abs(x - yesRect.left) < yesRect.width + 50 && 
