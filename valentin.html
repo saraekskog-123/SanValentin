@@ -234,7 +234,7 @@
                 Wise choice. We will be in touch with further details of the day- and night-time activities that will be organised for your full-day experience.
             </div>
             <div class="gif-container">
-                <img src="https://media.giphy.com/media/26u4cqiYI30juCOGY/giphy.gif" alt="Celebration">
+                <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExeWtrNnNzaXBsejE4b2hhOXlteTcxbjA1MDJwenVyMjM1dW9lbXlreSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xTiTnHvXHHxOTcdmxO/giphy.gif" alt="Celebration">
             </div>
         </div>
     </div>
@@ -285,43 +285,90 @@
         function moveNoButton(e) {
             if (!isNoButtonActive) return;
             
-            e.preventDefault();
+            if (e && e.preventDefault) {
+                e.preventDefault();
+            }
             
             const container = document.querySelector('.buttons-container');
             const containerRect = container.getBoundingClientRect();
-            const btnRect = btnNo.getBoundingClientRect();
             const yesRect = btnYes.getBoundingClientRect();
             
-            const maxX = containerRect.width - btnRect.width - 20;
-            const maxY = containerRect.height - btnRect.height - 20;
+            // Get current button dimensions
+            const noWidth = 120; // Approximate width
+            const noHeight = 60; // Approximate height
+            
+            const containerWidth = containerRect.width;
+            const containerHeight = containerRect.height;
             
             let newX, newY;
             let attempts = 0;
-            const maxAttempts = 50;
-            const minDistance = 120; // Minimum distance from yes button
+            const maxAttempts = 200;
+            const buffer = 100; // Large buffer
             
-            // Keep trying until we find a position that doesn't overlap with yes button
+            // Convert yes button position to container-relative coordinates
+            const yesRelativeLeft = yesRect.left - containerRect.left;
+            const yesRelativeRight = yesRect.right - containerRect.left;
+            const yesRelativeTop = yesRect.top - containerRect.top;
+            const yesRelativeBottom = yesRect.bottom - containerRect.top;
+            
+            // Keep trying until we find a position that doesn't overlap
             do {
-                newX = Math.random() * maxX;
-                newY = Math.random() * maxY;
+                // Generate random position within container
+                newX = Math.random() * (containerWidth - noWidth - 40) + 20;
+                newY = Math.random() * (containerHeight - noHeight - 40) + 20;
                 
-                // Calculate absolute position for distance check
-                const noButtonAbsX = containerRect.left + newX + btnRect.width / 2;
-                const noButtonAbsY = containerRect.top + newY + btnRect.height / 2;
-                const yesButtonCenterX = yesRect.left + yesRect.width / 2;
-                const yesButtonCenterY = yesRect.top + yesRect.height / 2;
+                // Calculate where the no button would be
+                const noLeft = newX;
+                const noRight = newX + noWidth;
+                const noTop = newY;
+                const noBottom = newY + noHeight;
                 
-                const distance = Math.sqrt(
-                    Math.pow(noButtonAbsX - yesButtonCenterX, 2) + 
-                    Math.pow(noButtonAbsY - yesButtonCenterY, 2)
-                );
+                // Add buffer to yes button boundaries
+                const yesLeftWithBuffer = yesRelativeLeft - buffer;
+                const yesRightWithBuffer = yesRelativeRight + buffer;
+                const yesTopWithBuffer = yesRelativeTop - buffer;
+                const yesBottomWithBuffer = yesRelativeBottom + buffer;
                 
-                if (distance > minDistance) {
+                // Check if this position overlaps with yes button (with buffer)
+                // Two rectangles overlap if they intersect in BOTH dimensions
+                const overlapsHorizontally = (noRight > yesLeftWithBuffer) && 
+                                            (noLeft < yesRightWithBuffer);
+                const overlapsVertically = (noBottom > yesTopWithBuffer) && 
+                                          (noTop < yesBottomWithBuffer);
+                
+                const isOverlapping = overlapsHorizontally && overlapsVertically;
+                
+                // If NOT overlapping, we found a good position
+                if (!isOverlapping) {
+                    console.log('Found non-overlapping position after', attempts, 'attempts');
                     break;
                 }
                 
                 attempts++;
-            } while (attempts < maxAttempts);
+                
+                // If we've tried too many times, force it to opposite corner
+                if (attempts >= maxAttempts) {
+                    console.log('Max attempts reached, forcing to safe position');
+                    // Put it in a corner far from yes button
+                    const yesCenterX = (yesRelativeLeft + yesRelativeRight) / 2;
+                    const yesCenterY = (yesRelativeTop + yesRelativeBottom) / 2;
+                    
+                    // Choose corner farthest from yes button
+                    if (yesCenterX < containerWidth / 2) {
+                        newX = containerWidth - noWidth - 30; // Right side
+                    } else {
+                        newX = 20; // Left side
+                    }
+                    
+                    if (yesCenterY < containerHeight / 2) {
+                        newY = containerHeight - noHeight - 30; // Bottom
+                    } else {
+                        newY = 20; // Top
+                    }
+                    break;
+                }
+                
+            } while (attempts < maxAttempts + 1);
             
             btnNo.style.position = 'absolute';
             btnNo.style.left = newX + 'px';
